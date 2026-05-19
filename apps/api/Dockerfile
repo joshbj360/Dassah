@@ -10,7 +10,7 @@ CMD ["npm", "run", "dev"]
 
 # ── Build target ──────────────────────────────────────────────────────────────
 FROM base AS build
-RUN npm ci
+RUN npm install
 COPY . .
 RUN npm run build
 
