@@ -23,7 +23,7 @@ interface SkillModule {
 
 // ── Discovery ─────────────────────────────────────────────────────────────────
 
-const SKILLS_DIR = path.join(__dirname, '../../../../skills')
+const SKILLS_DIR = path.join(__dirname, '../../skills')
 
 function loadSkillModule(skillName: string): SkillModule {
   const skillPath = path.join(SKILLS_DIR, skillName, 'index.js')
