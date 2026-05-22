@@ -69,9 +69,13 @@ module.exports = {
       if (!resolvedVariantId) {
         // Fetch product to find the first variant with stock
         const prodRes = await fetch(`${BASE_URL}/api/commerce/products/${productId}`, {
-          headers: { 'X-API-Key': API_KEY },
+          headers: authHeaders,
         })
-        if (!prodRes.ok) throw new Error(`Product not found (${prodRes.status}).`)
+        if (!prodRes.ok) {
+          const errText = await prodRes.text().catch(() => '')
+          console.error(`[cart:add] product fetch failed status=${prodRes.status} body=${errText.slice(0, 200)}`)
+          throw new Error(`Product not found (${prodRes.status}).`)
+        }
         const prodBody = await prodRes.json()
         const variants = prodBody.data?.variants ?? []
         if (!variants.length) throw new Error('This product has no available variants.')
@@ -87,8 +91,9 @@ module.exports = {
 
       if (res.status === 409) return { success: false, message: 'This item is already in your cart.' }
       if (!res.ok) {
-        const err = await res.text().catch(() => res.status)
-        throw new Error(`Add to cart failed: ${err}`)
+        const err = await res.text().catch(() => String(res.status))
+        console.error(`[cart:add] cart POST failed status=${res.status} body=${err.slice(0, 200)}`)
+        throw new Error(`Add to cart failed (${res.status}): ${err.slice(0, 100)}`)
       }
 
       const body = await res.json()

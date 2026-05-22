@@ -117,7 +117,7 @@ io.on('connection', async (socket) => {
 
       console.log(`[chat:${reqId}] ok tools=${response.toolsInvoked.join(',') || 'none'} rag=${response.ragHits} blocked=${response.guardBlocked}`)
 
-      const metadata = buildMessageMetadata(response.toolsInvoked, response.toolResults, channel)
+      const metadata = buildMessageMetadata(response.toolsInvoked, response.toolResults, channel, response.content)
 
       socket.emit('chat:typing', false)
       socket.emit('chat:message', {
@@ -195,10 +195,20 @@ io.on('connection', async (socket) => {
 
 // ── Metadata builder ──────────────────────────────────────────────────────────
 
+function extractBulletOptions(text: string): string[] {
+  return text
+    .split('\n')
+    .filter((l) => /^[-*]\s+.+/.test(l.trim()))
+    .map((l) => l.trim().replace(/^[-*]\s+/, '').replace(/\*\*/g, '').trim())
+    .filter((l) => l.length > 0 && l.length < 60)
+    .slice(0, 4)
+}
+
 function buildMessageMetadata(
   toolsInvoked: string[],
   toolResults: Record<string, unknown>,
   channel: string,
+  responseContent = '',
 ): Record<string, unknown> {
   const meta: Record<string, unknown> = { toolsInvoked }
 
@@ -268,8 +278,8 @@ function buildMessageMetadata(
     meta.analytics = analyticsResult
   }
 
-  // Quick replies — context-driven
-  meta.quickReplies = deriveQuickReplies(toolsInvoked, meta, channel)
+  // Quick replies — prefer bullet options from the response, fall back to context-driven
+  meta.quickReplies = deriveQuickReplies(toolsInvoked, meta, channel, responseContent)
 
   return meta
 }
@@ -278,11 +288,13 @@ function deriveQuickReplies(
   toolsInvoked: string[],
   meta: Record<string, unknown>,
   channel: string,
+  responseContent = '',
 ): string[] {
   if (channel === 'dassai-seller-web') {
     if (toolsInvoked.includes('seller_analytics')) return ['This month', 'Today', 'All time', 'Show orders']
     if (toolsInvoked.includes('store_management')) return ['View inventory', 'Check analytics', 'Run campaign']
-    return ['View analytics', 'Manage inventory', 'View orders']
+    const bullets = extractBulletOptions(responseContent)
+    return bullets.length ? bullets : ['View analytics', 'Manage inventory', 'View orders']
   }
 
   if (meta.isDeals)      return ['Add to cart', 'View cart', 'Show more deals', 'Search products']
@@ -294,6 +306,11 @@ function deriveQuickReplies(
   if (meta.orders)       return ['View order details', 'Track my order', 'Contact support']
   if (meta.wallet)       return ['Add funds', 'View transactions', 'View orders', 'View cart']
   if (meta.orderTracking) return ['Contact support', 'View all orders']
+
+  // No tool context — use bullet options from the AI's response if present
+  const bullets = extractBulletOptions(responseContent)
+  if (bullets.length) return bullets
+
   return ['Browse products', 'View cart', 'Track my order']
 }
 
