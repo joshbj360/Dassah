@@ -42,7 +42,7 @@
         @select="$emit('quickReply', $event)"
       />
 
-      <div :class="['text-[10px] mt-1.5 text-right opacity-70', message.role === 'user' ? 'text-blue-100' : 'text-gray-400']">
+      <div :class="['text-[10px] mt-1.5 text-right opacity-70', message.role === 'user' ? 'text-red-100' : 'text-gray-400']">
         {{ new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}
       </div>
     </div>
@@ -78,8 +78,8 @@ const widthClass = computed(() => {
 })
 
 const bubbleClass = computed(() => {
-  if (props.message.role === 'user') return 'bg-blue-600 text-white rounded-br-sm'
-  if (props.message.role === 'system') return 'bg-gray-200 text-gray-600 text-xs text-center mx-auto'
+  if (props.message.role === 'user') return 'bg-[#e52033] text-white rounded-br-sm'
+  if (props.message.role === 'system') return 'bg-amber-50 text-amber-700 text-xs text-center mx-auto'
   return 'bg-white text-gray-800 border border-gray-100 rounded-bl-sm'
 })
 </script>

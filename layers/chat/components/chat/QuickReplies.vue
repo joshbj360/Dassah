@@ -4,7 +4,7 @@
       v-for="reply in replies"
       :key="reply"
       @click="$emit('select', reply)"
-      class="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-medium hover:bg-blue-100 active:bg-blue-200 transition-colors whitespace-nowrap"
+      class="px-3 py-1.5 bg-[#e52033]/5 text-[#e52033] border border-[#e52033]/25 rounded-full text-xs font-semibold hover:bg-[#e52033]/10 hover:border-[#e52033]/40 active:scale-95 transition-all whitespace-nowrap"
     >
       {{ reply }}
     </button>

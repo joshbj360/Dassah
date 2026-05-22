@@ -58,7 +58,7 @@
         @click.stop="$emit('addToCart', product)"
         class="w-full py-1.5 rounded-xl text-xs font-semibold transition-all"
         :class="product.inStock
-          ? 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+          ? 'bg-[#e52033] text-white hover:bg-[#c01020] active:scale-95 shadow-sm shadow-[#e52033]/30'
           : 'bg-gray-100 text-gray-400 cursor-not-allowed'"
       >
         {{ product.inStock ? '+ Add to Cart' : 'Out of Stock' }}

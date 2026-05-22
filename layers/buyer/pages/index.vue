@@ -7,7 +7,7 @@
         <div class="w-8 h-8 rounded-lg bg-[#e52033] flex items-center justify-center text-white text-xs font-black shadow-lg shadow-red-900/40">
           DA
         </div>
-        <span class="font-bold text-white tracking-tight">DassaAI</span>
+        <span class="font-bold text-white tracking-tight">Dasah</span>
       </div>
       <button
         v-if="!loading"
@@ -76,7 +76,7 @@
 
     <!-- ── Skills grid ────────────────────────────────────────────────────────── -->
     <section class="px-6 pb-20 max-w-4xl mx-auto">
-      <p class="text-center text-white/30 text-xs font-semibold uppercase tracking-widest mb-8">What DassaAI can do</p>
+      <p class="text-center text-white/30 text-xs font-semibold uppercase tracking-widest mb-8">What Dasah can do</p>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div
@@ -100,7 +100,7 @@
 
     <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
     <footer class="border-t border-white/5 px-6 py-5 text-center text-white/20 text-xs">
-      DassaAI · Built on MarketX &middot; AI-powered shopping assistant
+      Dasah · Built on MarketX &middot; AI-powered shopping assistant
     </footer>
   </div>
 </template>

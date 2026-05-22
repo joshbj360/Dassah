@@ -19,13 +19,13 @@
       <!-- Bot name + mode -->
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5">
-          <span class="text-[15px] font-bold leading-tight text-gray-900 truncate">DassaAI</span>
+          <span class="text-[15px] font-bold leading-tight text-gray-900 truncate">Dasah</span>
           <span
             :class="[
               'inline-flex select-none items-center rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest',
               sessionMode === 'seller'
                 ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-blue-100 text-blue-700',
+                : 'bg-red-50 text-[#e52033]',
             ]"
           >
             {{ sessionMode === 'seller' ? 'Seller' : 'Buyer' }}

@@ -2,19 +2,19 @@
   <div class="flex flex-col h-[100dvh] max-w-3xl mx-auto bg-slate-900 shadow-xl overflow-hidden relative">
     <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold shadow">
+        <div class="w-10 h-10 bg-[#e52033] text-white rounded-full flex items-center justify-center font-bold shadow shadow-red-900/40">
           DA
         </div>
         <div>
-          <h1 class="font-bold text-lg leading-tight text-white">DassaAI Seller</h1>
+          <h1 class="font-bold text-lg leading-tight text-white">Dasah Seller</h1>
           <p class="text-xs text-slate-400">Store Manager</p>
         </div>
       </div>
       <div class="flex items-center gap-3">
-        <span :class="['text-xs px-2.5 py-1 rounded-full font-medium', isConnected ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300']">
+        <span :class="['text-xs px-2.5 py-1 rounded-full font-medium', isConnected ? 'bg-emerald-900 text-emerald-300' : 'bg-red-900 text-red-300']">
           {{ isConnected ? 'Online' : 'Disconnected' }}
         </span>
-        <button @click="switchToBuyer" class="text-xs px-3 py-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition">
+        <button @click="switchToBuyer" class="text-xs px-3 py-1 rounded-full bg-[#e52033] text-white hover:bg-[#c01020] transition active:scale-95">
           Switch to Buyer
         </button>
       </div>
@@ -49,12 +49,12 @@
           @keyup.enter="handleSend"
           :disabled="!isConnected"
           placeholder="Ask about your store, analytics, or run campaigns..."
-          class="flex-1 px-4 py-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 border border-slate-600 focus:border-purple-500 focus:outline-none"
+          class="flex-1 px-4 py-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 border border-slate-600 focus:border-[#e52033]/50 focus:ring-1 focus:ring-[#e52033]/20 focus:outline-none"
         />
         <button
           @click="handleSend"
           :disabled="!isConnected || !inputText.trim()"
-          class="px-6 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          class="px-6 py-3 bg-[#e52033] text-white rounded-lg font-medium hover:bg-[#c01020] disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95"
         >
           Send
         </button>
@@ -131,7 +131,7 @@ onUnmounted(() => {
   white-space: pre-wrap;
   line-height: 1.5;
 }
-.user .bubble-content { background: #7c3aed; }
+.user .bubble-content { background: #e52033; }
 .system .bubble-content {
   background: transparent;
   color: #94a3b8;
