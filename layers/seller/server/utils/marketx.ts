@@ -1,8 +1,5 @@
 import { H3Event, createError } from 'h3'
 
-const MARKETX_API_URL = process.env.MARKETX_API_URL
-const MARKETX_API_KEY = process.env.MARKETX_API_KEY
-
 /**
  * Make an authenticated request to the MarketX API.
  *
@@ -15,6 +12,10 @@ export async function fetchFromMarketX(
   userToken: string,
   options?: RequestInit,
 ): Promise<any> {
+  // Read at call time — module-level constants miss vars added after cold start.
+  const MARKETX_API_URL = process.env.MARKETX_API_URL
+  const MARKETX_API_KEY = process.env.MARKETX_API_KEY
+
   if (!MARKETX_API_URL || !MARKETX_API_KEY) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn('[MarketX] credentials missing — bypassing for local dev')
