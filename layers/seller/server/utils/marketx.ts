@@ -12,9 +12,10 @@ export async function fetchFromMarketX(
   userToken: string,
   options?: RequestInit,
 ): Promise<any> {
-  // Read at call time — module-level constants miss vars added after cold start.
-  const MARKETX_API_URL = process.env.MARKETX_API_URL
-  const MARKETX_API_KEY = process.env.MARKETX_API_KEY
+  // useRuntimeConfig() reads from nuxt.config runtimeConfig — picks up Railway vars correctly.
+  const config = useRuntimeConfig()
+  const MARKETX_API_URL = config.marketxApiUrl || process.env.MARKETX_API_URL
+  const MARKETX_API_KEY = config.marketxApiKey || process.env.MARKETX_API_KEY
 
   if (!MARKETX_API_URL || !MARKETX_API_KEY) {
     if (process.env.NODE_ENV !== 'production') {
