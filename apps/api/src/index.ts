@@ -95,6 +95,37 @@ io.on('connection', async (socket) => {
     console.log(`[Socket] user ${userId} switched to: ${type}`)
   })
 
+  socket.on('session:store', ({ storeId, storeName, storeSlug }) => {
+    socket.data.storeId   = storeId
+    socket.data.storeName = storeName
+    socket.data.storeSlug = storeSlug
+    console.log(`[Socket] user ${userId} selected store: ${storeName} (${storeId})`)
+  })
+
+  socket.on('chat:new', async () => {
+    await aiService.clearHistory(userId)
+    console.log(`[Socket] user ${userId} started new conversation`)
+  })
+
+  socket.on('chat:load', async ({ sessionId: targetSessionId }) => {
+    // History is currently keyed by userId — targetSessionId is userId for now.
+    // If they match, replay from Redis. Otherwise this is a no-op until per-session
+    // history storage is implemented.
+    if (targetSessionId === userId) {
+      const history = await getHistory(userId)
+      if (history.length) {
+        socket.emit('chat:history', history.map((entry, i) => ({
+          id:        `h-${i}`,
+          sessionId: userId,
+          role:      entry.role === 'assistant' ? 'bot' : ('user' as const),
+          content:   entry.content,
+          createdAt: new Date(),
+        })))
+      }
+    }
+    console.log(`[Socket] user ${userId} loaded conversation: ${targetSessionId}`)
+  })
+
   socket.on('chat:send', async ({ content }) => {
     socket.emit('chat:typing', true)
     const reqId = randomUUID().slice(0, 8)
@@ -113,6 +144,8 @@ io.on('connection', async (socket) => {
         channel,
         userToken:    session!.marketxToken,
         userAIConfig: session!.userAIConfig ?? null,
+        storeId:      socket.data.storeId,
+        storeSlug:    socket.data.storeSlug,
       })
 
       console.log(`[chat:${reqId}] ok tools=${response.toolsInvoked.join(',') || 'none'} rag=${response.ragHits} blocked=${response.guardBlocked}`)
@@ -291,8 +324,13 @@ function deriveQuickReplies(
   responseContent = '',
 ): string[] {
   if (channel === 'dassai-seller-web') {
+    // Seller-specific tools take priority
     if (toolsInvoked.includes('seller_analytics')) return ['This month', 'Today', 'All time', 'Show orders']
     if (toolsInvoked.includes('store_management')) return ['View inventory', 'Check analytics', 'Run campaign']
+    // Seller also invoked buyer tools (shopping) — use buyer replies
+    if (meta.products)    return ['Show more results', 'Add to cart', 'View cart', 'Search something else']
+    if (meta.cart)        return ['Checkout', 'Remove item', 'Continue shopping']
+    if (meta.cartUpdate)  return ['View cart', 'Checkout now', 'Continue shopping']
     const bullets = extractBulletOptions(responseContent)
     return bullets.length ? bullets : ['View analytics', 'Manage inventory', 'View orders']
   }

@@ -17,17 +17,21 @@ module.exports = {
 
   async execute(inputs, context) {
     const { timeframe = 'week' } = inputs
-    const userToken = context?.userToken
+    const userToken  = context?.userToken
+    const ctxSlug    = context?.storeSlug
 
     if (!userToken) throw new Error('Seller analytics requires an authenticated session.')
 
     const headers = { 'X-API-Key': API_KEY, Authorization: `Bearer ${userToken}` }
 
-    // Step 1: resolve seller's storeSlug from profile
-    const profileRes = await fetch(`${BASE_URL}/api/profile`, { headers })
-    if (!profileRes.ok) throw new Error(`Failed to load profile: ${profileRes.status}`)
-    const profileBody = await profileRes.json()
-    const storeSlug = profileBody.data?.sellerProfile?.store_slug
+    // Step 1: resolve storeSlug — prefer session context (multi-store), fall back to profile
+    let storeSlug = ctxSlug
+    if (!storeSlug) {
+      const profileRes = await fetch(`${BASE_URL}/api/profile`, { headers })
+      if (!profileRes.ok) throw new Error(`Failed to load profile: ${profileRes.status}`)
+      const profileBody = await profileRes.json()
+      storeSlug = profileBody.data?.sellerProfile?.store_slug
+    }
     if (!storeSlug) throw new Error('No seller store found for this account.')
 
     // Step 2: date range

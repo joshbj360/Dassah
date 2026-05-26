@@ -18,7 +18,7 @@ interface SkillModule {
   channels: SkillChannel[]
   description: string
   parameters: Record<string, any>
-  execute: (inputs: Record<string, unknown>, context: { userToken: string }) => Promise<unknown>
+  execute: (inputs: Record<string, unknown>, context: { userToken: string; storeId?: string; storeSlug?: string }) => Promise<unknown>
 }
 
 // ── Discovery ─────────────────────────────────────────────────────────────────
@@ -35,8 +35,11 @@ function loadSkillModule(skillName: string): SkillModule {
  * Load all skills for a given channel. Context is closed over in each
  * entry's execute function, enabling hot-swap within the same turn.
  */
-export function loadSkills(channel: Channel, context: { userToken: string }): SkillEntry[] {
-  const skillChannel: SkillChannel = channel === 'dassai-seller-web' ? 'seller' : 'buyer'
+export function loadSkills(channel: Channel, context: { userToken: string; storeId?: string; storeSlug?: string }): SkillEntry[] {
+  // Seller mode loads both seller AND buyer skills — sellers can also shop.
+  const allowedChannels: SkillChannel[] = channel === 'dassai-seller-web'
+    ? ['seller', 'buyer']
+    : ['buyer']
 
   const entries = fs.readdirSync(SKILLS_DIR, { withFileTypes: true })
     .filter((d) => d.isDirectory())
@@ -47,7 +50,7 @@ export function loadSkills(channel: Channel, context: { userToken: string }): Sk
   for (const name of entries) {
     try {
       const mod = loadSkillModule(name)
-      if (!mod.channels.includes(skillChannel)) continue
+      if (!mod.channels.some((c) => allowedChannels.includes(c))) continue
 
       skills.push({
         name,

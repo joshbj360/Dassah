@@ -3,6 +3,17 @@
     <div class="h-[3px] w-full bg-[#e52033]" />
 
     <div class="px-4 py-3 flex items-center gap-3">
+      <!-- Sidebar toggle (mobile only — desktop sidebar is always visible) -->
+      <button
+        @click="$emit('toggle-sidebar')"
+        class="sm:hidden w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors shrink-0 -ml-1"
+        title="Conversation history"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
       <!-- DassaAI identity -->
       <div class="relative shrink-0">
         <div class="w-10 h-10 rounded-full bg-[#e52033] flex items-center justify-center shadow-sm ring-2 ring-red-100">
@@ -159,6 +170,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from '#app'
 
+defineEmits<{ 'toggle-sidebar': [] }>()
+
 const { user, logout } = useAuth()
 const { isConnected, socket } = useSocket()
 const router = useRouter()
@@ -173,8 +186,12 @@ const avatarSrc = computed(() =>
 )
 
 function setMode(mode: 'buyer' | 'seller') {
-  sessionMode.value = mode
-  socket.value?.emit('session:type', mode)
+  if (mode === 'seller') {
+    router.push('/seller/chat')
+  } else {
+    sessionMode.value = 'buyer'
+    socket.value?.emit('session:type', 'buyer')
+  }
 }
 
 function toggleMenu() {

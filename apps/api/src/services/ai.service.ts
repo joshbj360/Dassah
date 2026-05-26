@@ -88,7 +88,8 @@ RULES:
 14. Never ask the user for information you can fetch yourself (price, stock, product details). Always use your tools.`
 
 const SELLER_BASE = `You are DassaAI Seller Manager, a powerful AI assistant for MarketX sellers.
-Your goal is to help sellers manage their stores, view analytics, run campaigns, and handle orders.
+Your primary goal is to help sellers manage their stores, view analytics, run campaigns, and handle orders.
+You also have full buyer tools available — sellers can shop on MarketX without switching mode.
 
 RULES:
 1. Provide actionable insights from analytics data.
@@ -98,7 +99,9 @@ RULES:
 5. Use store_management for inventory/price updates.
 6. Use seller_analytics for performance queries.
 7. Use social_media for marketing campaigns.
-8. When you want to present the user with choices or next steps, use a bullet list (- option). Each bullet becomes a tappable button in the UI. Only use bullets for actual selectable options, not for informational lists.`
+8. When a seller wants to find, buy, or add a product to their cart, use the buyer tools (search_products, cart, payment) exactly as you would for a buyer.
+9. When you want to present the user with choices or next steps, use a bullet list (- option). Each bullet becomes a tappable button in the UI. Only use bullets for actual selectable options, not for informational lists.
+10. NEVER display product results as markdown tables or bullet lists — the UI renders product cards automatically. Write a short intro sentence and let the cards handle the rest.`
 
 // ── Conversation history (Redis) ──────────────────────────────────────────────
 
@@ -291,8 +294,10 @@ export const aiService = {
     channel:      Channel
     userToken:    string
     userAIConfig: UserAIConfig | null
+    storeId?:     string
+    storeSlug?:   string
   }): Promise<{ content: string; toolsInvoked: string[]; toolResults: Record<string, unknown>; guardBlocked: boolean; ragHits: number }> {
-    const { userId, content, channel, userToken, userAIConfig } = params
+    const { userId, content, channel, userToken, userAIConfig, storeId, storeSlug } = params
     const startMs = Date.now()
 
     // 1. Guard: sanitize input
@@ -324,7 +329,7 @@ export const aiService = {
     const history = await getHistory(userId)
     history.push({ role: 'user', content: safeContent })
 
-    const skills   = loadSkills(channel, { userToken })
+    const skills   = loadSkills(channel, { userToken, storeId, storeSlug })
     const provider = userAIConfig?.provider ?? 'anthropic'
     const model    = userAIConfig?.model    ?? 'claude-sonnet-4-6'
     const apiKey   = userAIConfig?.apiKey   ?? process.env.ANTHROPIC_API_KEY ?? ''

@@ -3,7 +3,7 @@
     <p class="text-xs text-gray-400 mb-2 font-medium uppercase tracking-wide">
       {{ products.length }} result{{ products.length === 1 ? '' : 's' }}
     </p>
-    <div class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+    <div class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
       <ProductCard
         v-for="product in products"
         :key="product.id"
@@ -23,11 +23,3 @@ defineProps<{ products: ProductItem[] }>()
 defineEmits<{ addToCart: [product: ProductItem] }>()
 </script>
 
-<style scoped>
-.scrollbar-hide {
-  scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-</style>

@@ -26,6 +26,15 @@ export interface ChatMessageMetadata {
   orderTracking?: unknown
   analytics?: unknown
   quickReplies?: string[]
+  // Payment / purchase flow
+  approvalToken?: string
+  paymentUrl?: string
+  productName?: string
+  productId?: string | number
+  price?: number
+  currency?: string
+  seller?: string
+  imageUrl?: string
 }
 
 export interface ChatMessage {
